@@ -31,3 +31,35 @@ AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_S3_BUCKET
 
+## Testing a dev deployment notebook in the cloud
+
+Zoe does this when debugging the base notebook:
+1. Build a new base notebook image:
+   ```bash
+   ~/msdlive/jupyter/jupyter-stacks/images/hub-notebook$ docker compose build
+   ```
+1. Retag the base notebook image with 'dev':
+   ```bash
+   ~/msdlive/jupyter/jupyter-stacks/images/hub-notebook$ docker tag ghcr.io/msd-live/jupyter/python-notebook:latest notebook:dev
+   ```
+1. Build the xanthos image to use 'dev' tag:
+
+   Edit Dockerfile to use
+   ```bash
+   FROM ghcr.io/msd-live/jupyter/python-notebook:dev AS build-image
+   ```
+   build and publish the dev image:
+   ```bash
+   ~/msdlive/jupyter/notebook_repos/jupyter-notebook-xanthos$ docker build -t ghcr.io/msd-live/jupyter/xanthos-notebook:dev -f Dockerfile .
+   ~/msdlive/jupyter/notebook_repos/jupyter-notebook-xanthos$ docker push ghcr.io/msd-live/jupyter/xanthos-notebook:dev
+   ```
+1. You might need to update the xanthos stack deployment if it was deployed to use 'latest' instead of 'dev':
+
+   Edit jupyter-stack/deployments/xanthos/config.dev.yaml to have 
+   ```bash
+   notebook_image: ghcr.io/msd-live/jupyter/xanthos-notebook:dev
+   ```
+   Redeploy the stack:
+   ```bash
+   ~/msdlive/jupyter/jupyter-stacks/stacks$ ./stack.sh run_deployment deploy xanthos dev
+   ```
