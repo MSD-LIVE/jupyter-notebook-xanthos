@@ -48,35 +48,3 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-west-2"
-  update-JupyterPackagesInventory:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout central inventory repo
-      uses: actions/checkout@v3
-      with:
-        repository: MSD-LIVE/JupyterPackagesInventory
-        token: ${{ secrets.ORG_TOKEN_TO_ACCESS_JUPYTERPACKAGESINVENTORY_REPO }}
-        path: JupyterPackagesInventory
-
-    - name: Install Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-
-    - name: Install PyYAML
-      run: pip install pyyaml
-
-    - name: Run Update metadata YAML file
-      env:
-        REPOSITORY_NAME: ${{ github.event.repository.name }}
-        PROJECT: ${{ vars.PROJECT }}
-      run: python JupyterPackagesInventory/update_metadata.py
-
-    - name: Commit and Push Changes
-      run: |
-        cd JupyterPackagesInventory
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        git add package-metadata.yaml
-        git commit -m "Update metadata for ${{ github.event.repository.name }}"
-        git push https://x-access-token:${{ secrets.ORG_TOKEN_TO_ACCESS_JUPYTERPACKAGESINVENTORY_REPO }}@github.com/MSD-LIVE/JupyterPackagesInventory.git
