@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-def activate(server_app):
+def activate(server_app=None):
     """
     From inside the user's home directory:
     1. Checks if a symlink named 'data' exists:
@@ -14,7 +14,7 @@ def activate(server_app):
     4. Copies everything from '/data/example' to the new 'data' directory,
        except the input directory is symlink'd, as it can be read-only and is very large.
     """
-    server_app.log.info("Plugin has been activated!")
+    server_app.log.info(f"Plugin has been activated! server_app {server_app}")
     
     symlink_path = 'data'
     if os.path.islink(symlink_path):
