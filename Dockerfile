@@ -1,5 +1,5 @@
 # FROM jupyter/minimal-notebook:2022-05-03
-FROM ghcr.io/msd-live/jupyter/python-notebook:dev AS build-image
+FROM ghcr.io/msd-live/jupyter/python-notebook:latest AS build-image
 
 USER root
 
@@ -7,7 +7,7 @@ RUN mkdir -p /usr/src/xanthos
 RUN cd /usr/src/xanthos && git clone https://github.com/JGCRI/xanthos.git
 RUN rm -rf /usr/src/xanthos/xanthos/xanthos/data
 
-FROM ghcr.io/msd-live/jupyter/python-notebook:dev AS main-image
+FROM ghcr.io/msd-live/jupyter/python-notebook:latest AS main-image
 USER root
 COPY --from=build-image "/usr/src/xanthos" "/usr/src/xanthos"
 
