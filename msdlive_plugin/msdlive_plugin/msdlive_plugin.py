@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-def activate():
+def activate(server_app):
     """
     From inside the user's home directory:
     1. Checks if a symlink named 'data' exists:
@@ -14,18 +14,18 @@ def activate():
     4. Copies everything from '/data/example' to the new 'data' directory,
        except the input directory is symlink'd, as it can be read-only and is very large.
     """
-    print("Plugin has been activated!")
+    server_app.log.info("Plugin has been activated!")
     
     symlink_path = 'data'
     if os.path.islink(symlink_path):
         os.unlink(symlink_path)
-        print(f"Symlink '{symlink_path}' has been removed.")
+        server_app.log.info(f"Symlink '{symlink_path}' has been removed.")
     else:
-        print(f"'{symlink_path}' is not a symlink.")
+        server_app.log.info(f"'{symlink_path}' is not a symlink.")
     
     # Create a new directory named 'data'
     os.makedirs(symlink_path, exist_ok=True)
-    print(f"Directory '{symlink_path}' has been created.")
+    server_app.log.info(f"Directory '{symlink_path}' has been created.")
 
     def copy_function(src, dst):
         if not os.path.exists(dst) or os.path.getmtime(
@@ -37,12 +37,19 @@ def activate():
     # because the input dir can be read only and is very large
     source_path = '/data/example'
     dest_path = "data/example"
+    
+    if not os.path.exists(source_path):
+        server_app.log.error(f"Source directory '{source_path}' does not exist.")
+        return
+
+    os.makedirs(dest_path, exist_ok=True)
+    server_app.log.info(f"Directory '{dest_path}' has been created.")
 
     # Iterate through all files in the example folder
     for file in os.listdir(source_path):
         file_src = os.path.join(source_path, file)
         file_dest = os.path.join(dest_path, file)
-
+        server_app.log.error(f"Processing: {file_src} to {file_dest}")
         # Check if the file is a folder
         if os.path.isdir(file_src):
             if file == "input":
