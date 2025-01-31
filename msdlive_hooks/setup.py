@@ -6,8 +6,8 @@ setup(
     version='0.1',
     packages=find_packages(),
     entry_points={
-        'msdlive_extension.plugin_activate': [
-            'msdlive_plugin = msdlive_plugin.msdlive_plugin:activate',  # Reference to the activate function in my_plugin.py
+        'msdlive_extension.activate_hook': [
+            'copy_to_home = msdlive_hooks:activate',  # Reference to the activate function in my_plugin.py
         ],
     },
 )
