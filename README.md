@@ -1,4 +1,5 @@
 # MSD-LIVE Statemodify Notebook
+touch
 
 This repo contains the Dockerfile to build the notebook image as well as the notebooks
 used in the MSD-LIVE deployment. It will rebuild the image and redeploy the notebooks
