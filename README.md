@@ -25,11 +25,6 @@ to pull from s3 if you want to test locally**
    docker compose up
    ```
 
-Notebook repos need to set these secrets (use *_uploader user to generate new access keys):  
-
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_S3_BUCKET
 
 ## Testing a dev deployment notebook in the cloud
 
@@ -63,3 +58,8 @@ Zoe does this when debugging the base notebook:
    ```bash
    ~/msdlive/jupyter/jupyter-stacks/stacks$ ./stack.sh run_deployment deploy xanthos dev
    ```
+
+
+   
+## MSD-LIVE customization via plugin:
+Input data dir needed to be writable so removed symlink from user's home dir that points to /data (was read only) and copies from /data to user's home dir 
