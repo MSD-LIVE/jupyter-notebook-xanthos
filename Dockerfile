@@ -29,3 +29,5 @@ RUN chmod -R 777 /usr/src/xanthos
 # copy the files to users home dir instead of using the exisitng symlink to /data from users_home_dir/data
 COPY msdlive_hooks /srv/jupyter/extensions/msdlive_hooks
 RUN pip install /srv/jupyter/extensions/msdlive_hooks
+
+COPY notebooks /home/jovyan/notebooks
