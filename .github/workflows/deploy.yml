@@ -9,59 +9,7 @@ on:
     types: [trigger-build-dev, trigger-build-latest]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  call-parent-build:
+    uses: msd-live/devops-common/.github/workflows/notebook-image-build.yml@main
 
-    steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
 
-      # Step 2: Log in to GitHub Container Registry
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Step 3: Build and push Docker image.  We get the github default variables for
-      # repository owner (MSD-LIVE) and repository name (e.g., jupyter-notebook-statemodify)
-      # Then we convert owner name to lowercase (because the docker push requires lowercase)
-      # and we parse off the jupter-notebook- from the repo name and convert the tag to
-      # jupyter/$DEPLOYMENT_NAME-notebook:latest (e.g., jupyter/statemodify-notebook:latest).
-      - name: Build and push Docker image
-        run: |
-          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
-            if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
-              echo "PUSH event, building dev image"
-              TAG="dev"
-            elif [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "PUSH event, building latest image"
-              TAG="latest"
-            else
-              echo "This action only runs on dev or main branches."
-              exit 1
-            fi
-          elif [[ $GITHUB_EVENT_NAME == 'repository_dispatch' ]]; then
-            echo "repository_dispatch event: ${{ github.event.action }}"
-            if [[  ${{ github.event.action }} == 'trigger-build-dev' ]]; then
-              echo "REPOSITORY_DISPATCH event, building dev image"
-              TAG="dev"
-            elif [[  ${{ github.event.action }} == 'trigger-build-latest' ]]; then
-              echo "REPOSITORY_DISPATCH event, building latest image"
-              TAG="latest"
-            else
-              echo "Unsupported repository_dispatch event:  ${{ github.event.action }}"
-              exit 1
-            fi
-          else
-            echo "Unsupported event: $GITHUB_EVENT_NAME"
-            exit 1
-          fi
-          REPO_NAME=$(basename $GITHUB_REPOSITORY)
-          DEPLOYMENT_NAME=${REPO_NAME#jupyter-notebook-}
-          REPO_OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
-          IMAGE_NAME="ghcr.io/${REPO_OWNER}/jupyter/${DEPLOYMENT_NAME}-notebook:$TAG"
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
