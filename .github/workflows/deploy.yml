@@ -11,5 +11,3 @@ on:
 jobs:
   call-parent-build:
     uses: msd-live/devops-common/.github/workflows/notebook-image-build.yml@main
-
-
