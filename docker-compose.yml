@@ -11,4 +11,4 @@ services:
       - "8888:8888"
     volumes:
       - ./data:/home/jovyan/data
-      - ./notebooks:/home/jovyan/notebooks
+      # - ./notebooks:/home/jovyan/notebooks
